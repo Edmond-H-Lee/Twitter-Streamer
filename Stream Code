@@ -1,0 +1,22 @@
+import tweepy
+import json
+
+class Stream(tweepy.StreamListener):
+    def __init__(self, api):
+        self.api = api
+        self.me = api.me()
+
+    def on_status(self, tweet):
+        print(f"{tweet.user.name}:{tweet.text}")
+
+    def on_error(self, status):
+        print("Error")
+
+auth = tweepy.OAuthHandler("API_KEY", "API_SECRET_KEY")
+auth.set_access_token("ACCESS_TOKEN", "ACCESS_TOKEN_KEY")
+
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+
+tweet_search = Stream(api)
+stream = tweepy.Stream(api.auth, tweet_search)
+stream.filter(track=["SEARCH_KEYWORD"], languages=["en"])
