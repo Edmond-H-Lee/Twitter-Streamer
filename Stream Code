@@ -1,22 +1,23 @@
 import tweepy
-import json
 
-class Stream(tweepy.StreamListener):
-    def __init__(self, api):
-        self.api = api
-        self.me = api.me()
+consumer_key = 'API Key'
+consumer_secret = 'API Key Secret'
+access_key = 'Access Token'
+access_secret = 'Access Token Secret'
 
+class Stream(tweepy.Stream):
     def on_status(self, tweet):
-        print(f"{tweet.user.name}:{tweet.text}")
+        print(f"@{tweet.user.screen_name}: {tweet.text}") # includes the @ in front of the screen name for visual purposes
 
-    def on_error(self, status):
-        print("Error")
+    def on_disconnect(self):
+        print("Disconnected")
 
-auth = tweepy.OAuthHandler("API_KEY", "API_SECRET_KEY")
-auth.set_access_token("ACCESS_TOKEN", "ACCESS_TOKEN_KEY")
+twitter_stream = Stream(
+  consumer_key, consumer_secret,
+  access_key, access_secret
+)
 
-api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+search_words = input('Enter keyword without the hashtag: ')
+hashtag = '#'+ search_words # automatically includes the twitter hashtag in your search
 
-tweet_search = Stream(api)
-stream = tweepy.Stream(api.auth, tweet_search)
-stream.filter(track=["SEARCH_KEYWORD"], languages=["en"])
+user_tweets = twitter_stream.filter(track=[hashtag], languages=['en'])
